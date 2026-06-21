@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Bistro Europa — Biograd na Moru. Svježa riba, domaće tjestenine i mediteranska kuhinja tik uz marinu. Rezervirajte stol." />
+  <title>Bistro Europa — Biograd na Moru</title>
+
+  <!-- Google Fonts: Libre Baskerville + Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- GSAP 3.12.5 + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Lenis 1.1.18 -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+
+  <style>
+    /* ================================================
+       DESIGN TOKENS — Marina / Seaside Editorial v2
+    ================================================ */
+    :root {
+      --navy:        #0D2340;
+      --navy-mid:    #152E50;
+      --navy-light:  #1E3F6A;
+      --sand:        #F2EDE4;
+      --sand-warm:   #B8A99A;
+      --white:       #FFFFFF;
+      --teal:        #2A8FA3;
+      --teal-light:  #3AAEC5;
+      --teal-dark:   #1F6E80;
+      --text-body:   #3A3530;
+      --text-mid:    #6B6058;
+
+      --font-display: 'Libre Baskerville', Georgia, serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+
+      --ease-smooth: cubic-bezier(0.76, 0, 0.24, 1);
+      --ease-out:    cubic-bezier(0.33, 1, 0.68, 1);
+
+      --container:   1240px;
+      --radius:      4px;
+    }
+
+    /* ================================================
+       RESET & BASE
+    ================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: auto; /* Lenis handles this */
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--sand);
+      color: var(--text-body);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    ul { list-style: none; }
+
+    /* ================================================
+       TYPOGRAPHY SCALE
+    ================================================ */
+    .display-xl {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    .display-lg {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.5vw, 3.8rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+
+    .display-md {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3vw, 2.4rem);
+      font-weight: 400;
+      line-height: 1.25;
+    }
+
+    .eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+
+    .body-lg {
+      font-size: clamp(1rem, 1.5vw, 1.125rem);
+      line-height: 1.75;
+      color: var(--text-mid);
+    }
+
+    /* ================================================
+       LAYOUT UTILITIES
+    ================================================ */
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 5vw, 3rem);
+    }
+
+    .section-pad {
+      padding: clamp(4rem, 8vw, 7rem) 0;
+    }
+
+    /* ================================================
+       SECTION DIVIDER LINE (draws in on scroll)
+    ================================================ */
+    .divider-line {
+      width: 100%;
+      height: 1px;
+      background: var(--sand-warm);
+      transform-origin: left;
+      transform: scaleX(0);
+      opacity: 0.6;
+    }
+
+    /* ================================================
+       HEADER / NAV
+    ================================================ */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 900;
+      transition: background 0.4s var(--ease-smooth), box-shadow 0.4s var(--ease-smooth);
+      padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+    }
+
+    .site-header.scrolled {
+      background: rgba(13, 35, 64, 0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .site-logo {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .logo-name {
+      font-family: var(--font-display);
+      font-size: 1.1875rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+    }
+
+    .logo-tagline {
+      font-family: var(--font-body);
+      font-size: 0.5625rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+    }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .main-nav a {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      transition: color 0.2s;
+    }
+
+    .main-nav a:hover { color: var(--white); }
+
+    .nav-reserve-btn {
+      font-family: var(--font-body);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--white) !important;
+      border: 1.5px solid var(--teal);
+      padding: 0.55rem 1.25rem;
+      border-radius: var(--radius);
+      transition: background 0.25s, color 0.25s !important;
+    }
+
+    .nav-reserve-btn:hover {
+      background: var(--teal);
+      color: var(--white) !important;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 8px;
+      background: none;
+      border: none;
+      z-index: 1001;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1.5px;
+      background: var(--white);
+      transition: transform 0.3s var(--ease-smooth), opacity 0.3s;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* Mobile nav overlay */
+    .mobile-nav {
+      position: fixed;
+      inset: 0;
+      background: var(--navy);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s var(--ease-smooth);
+    }
+
+    .mobile-nav.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .mobile-nav a {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      font-weight: 400;
+      color: var(--white);
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+
+    .mobile-nav a:hover { color: var(--teal-light); }
+
+    .mobile-nav-reserve {
+      margin-top: 1rem;
+      font-family: var(--font-body) !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.12em !important;
+      text-transform: uppercase;
+      border: 1.5px solid var(--teal);
+      padding: 0.8rem 2.5rem;
+      border-radius: var(--radius);
+    }
+
+    /* ================================================
+       HERO — EDITORIAL SPLIT LAYOUT
+    ================================================ */
+    .hero {
+      min-height: 100svh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+    }
+
+    /* Left: Navy text block */
+    .hero-text-panel {
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: clamp(5rem, 8vw, 7rem) clamp(2rem, 5vw, 4rem) clamp(3rem, 5vw, 4.5rem);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle teal accent line */
+    .hero-text-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: clamp(2rem, 5vw, 4rem);
+      width: 2px;
+      height: 40%;
+      background: var(--teal);
+      opacity: 0.5;
+    }
+
+    .hero-eyebrow {
+      margin-bottom: 1.5rem;
+      color: var(--teal-light);
+    }
+
+    .hero-title {
+      color: var(--white);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--teal-light);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+      color: rgba(255,255,255,0.6);
+      line-height: 1.65;
+      max-width: 400px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--teal);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.875rem 1.75rem;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--teal);
+      transition: background 0.25s, border-color 0.25s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      background: var(--teal-dark);
+      border-color: var(--teal-dark);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.875rem 1.75rem;
+      border-radius: var(--radius);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      transition: border-color 0.25s, background 0.25s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-outline:hover {
+      border-color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* Hero scroll indicator */
+    .hero-scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0.5;
+    }
+
+    .hero-scroll-indicator span {
+      font-size: 0.5625rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--white);
+      writing-mode: vertical-rl;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: var(--white);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { transform: scaleY(1); opacity: 0.5; }
+      50% { transform: scaleY(0.4); opacity: 1; }
+    }
+
+    /* Right: Photo panel */
+    .hero-photo-panel {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-photo-panel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transform: scale(1.05);
+      transition: transform 0.8s var(--ease-smooth);
+    }
+
+    /* Clip-path overlay for editorial feel */
+    .hero-photo-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(13,35,64,0.2) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    /* Location badge */
+    .hero-location-badge {
+      position: absolute;
+      bottom: 2rem;
+      left: 1.5rem;
+      background: rgba(13,35,64,0.85);
+      backdrop-filter: blur(8px);
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius);
+      border-left: 2px solid var(--teal);
+    }
+
+    .hero-location-badge p {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--white);
+      line-height: 1.4;
+    }
+
+    .hero-location-badge span {
+      color: var(--teal-light);
+    }
+
+    /* ================================================
+       MARQUEE STRIP
+    ================================================ */
+    .marquee-section {
+      background: var(--teal);
+      padding: 0.875rem 0;
+      overflow: hidden;
+    }
+
+    .marquee-track {
+      display: inline-flex;
+      white-space: nowrap;
+      animation: marqueeMove 30s linear infinite;
+    }
+
+    .marquee-item {
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.9);
+      padding: 0 2rem;
+    }
+
+    .marquee-dot {
+      color: rgba(255,255,255,0.4);
+      margin: 0 0.5rem;
+    }
+
+    @keyframes marqueeMove {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .marquee-track { animation: none; }
+    }
+
+    /* ================================================
+       ABOUT SECTION — Stat-driven
+    ================================================ */
+    .about-section {
+      background: var(--white);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(3rem, 6vw, 5rem);
+      align-items: center;
+    }
+
+    .about-text-col {
+      /* Slide from left */
+    }
+
+    .about-text-col .eyebrow {
+      margin-bottom: 1.25rem;
+    }
+
+    .about-text-col h2 {
+      margin-bottom: 1.5rem;
+      color: var(--navy);
+    }
+
+    .about-text-col p {
+      margin-bottom: 2rem;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--sand-warm);
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1;
+    }
+
+    .stat-number sup {
+      font-size: 0.55em;
+      font-weight: 400;
+      vertical-align: super;
+      color: var(--teal);
+    }
+
+    .stat-label {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+    }
+
+    /* About image */
+    .about-image-col {
+      position: relative;
+      /* Slide from right */
+    }
+
+    .about-image-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+
+    .about-image-wrap img {
+      width: 100%;
+      height: clamp(300px, 45vw, 520px);
+      object-fit: cover;
+      clip-path: inset(100% 0 0 0);
+    }
+
+    /* Teal accent corner */
+    .about-image-col::before {
+      content: '';
+      position: absolute;
+      top: -1rem;
+      right: -1rem;
+      width: 5rem;
+      height: 5rem;
+      border-top: 2px solid var(--teal);
+      border-right: 2px solid var(--teal);
+      opacity: 0.4;
+      z-index: 1;
+    }
+
+    .about-image-col::after {
+      content: '';
+      position: absolute;
+      bottom: -1rem;
+      left: -1rem;
+      width: 5rem;
+      height: 5rem;
+      border-bottom: 2px solid var(--teal);
+      border-left: 2px solid var(--teal);
+      opacity: 0.4;
+      z-index: 1;
+    }
+
+    /* ================================================
+       MENU SECTION — Single-column editorial
+    ================================================ */
+    .menu-section {
+      background: var(--sand);
+    }
+
+    .menu-header {
+      margin-bottom: clamp(2.5rem, 5vw, 4rem);
+      max-width: 640px;
+    }
+
+    .menu-header .eyebrow {
+      margin-bottom: 1rem;
+    }
+
+    .menu-header h2 {
+      color: var(--navy);
+      margin-bottom: 1rem;
+    }
+
+    .menu-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 4vw, 3.5rem) clamp(3rem, 6vw, 6rem);
+      align-items: start;
+    }
+
+    .menu-col { display: flex; flex-direction: column; gap: 2.5rem; }
+
+    .menu-category {
+      padding: 0;
+    }
+
+    .menu-category-name {
+      font-family: var(--font-body);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(42,143,163,0.25);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .menu-category-name::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 1.5px;
+      background: var(--teal);
+      flex-shrink: 0;
+    }
+
+    .menu-items { display: flex; flex-direction: column; gap: 0; }
+
+    .menu-item {
+      padding: 0.875rem 0;
+      border-bottom: 1px solid rgba(184,169,154,0.3);
+      transition: background 0.2s;
+    }
+
+    .menu-item:last-child { border-bottom: none; }
+
+    .menu-item-name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--navy);
+      line-height: 1.3;
+    }
+
+    .menu-item-desc {
+      font-size: 0.8125rem;
+      color: var(--text-mid);
+      margin-top: 0.2rem;
+    }
+
+    /* Menu accent image */
+    .menu-accent-image {
+      margin: clamp(2rem, 4vw, 3.5rem) 0;
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px;
+      grid-column: 1 / -1;
+    }
+
+    .menu-accent-image img {
+      width: 100%;
+      height: clamp(200px, 30vw, 320px);
+      object-fit: cover;
+      clip-path: inset(0 100% 0 0);
+    }
+
+    .menu-accent-image::after {
+      content: '"Iz mora, na stol — svaki dan."';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.75rem);
+      color: var(--white);
+      background: rgba(13,35,64,0.45);
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* ================================================
+       MARINA SECTION — Wide parallax band (VISUAL CENTERPIECE)
+    ================================================ */
+    .marina-section {
+      position: relative;
+      overflow: hidden;
+      min-height: clamp(400px, 55vw, 680px);
+      display: flex;
+      align-items: center;
+    }
+
+    .marina-bg {
+      position: absolute;
+      inset: -15%;
+      /* extra height for parallax room */
+    }
+
+    .marina-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .marina-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        rgba(13,35,64,0.88) 0%,
+        rgba(13,35,64,0.65) 50%,
+        rgba(13,35,64,0.3) 100%
+      );
+    }
+
+    .marina-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+      padding: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 5vw, 3rem);
+      margin-left: clamp(1.25rem, 8vw, 8rem);
+    }
+
+    .marina-content .eyebrow {
+      color: var(--teal-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .marina-content h2 {
+      color: var(--white);
+      margin-bottom: 1.5rem;
+    }
+
+    .marina-content p {
+      color: rgba(255,255,255,0.75);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    .marina-detail-strip {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .marina-detail {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    .marina-detail-icon {
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(42,143,163,0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .marina-detail-icon svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--teal-light);
+      fill: none;
+    }
+
+    .marina-detail-text {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ================================================
+       GALLERY — 3-column masonry
+    ================================================ */
+    .gallery-section {
+      background: var(--white);
+    }
+
+    .gallery-header {
+      margin-bottom: clamp(2rem, 4vw, 3rem);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .gallery-header h2 { color: var(--navy); }
+
+    .gallery-masonry {
+      columns: 3;
+      column-gap: 1rem;
+    }
+
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      display: block;
+      transition: transform 0.6s var(--ease-smooth);
+      clip-path: inset(100% 0 0 0);
+    }
+
+    .gallery-item:hover img { transform: scale(1.04); }
+
+    .gallery-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(13,35,64,0);
+      transition: background 0.3s;
+    }
+
+    .gallery-item:hover::after { background: rgba(13,35,64,0.15); }
+
+    /* ================================================
+       RESERVATIONS + HOURS
+    ================================================ */
+    .reserve-section {
+      background: var(--navy);
+    }
+
+    .reserve-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(3rem, 6vw, 5rem);
+      align-items: start;
+    }
+
+    .reserve-col .eyebrow {
+      color: var(--teal-light);
+      margin-bottom: 1.25rem;
+    }
+
+    .reserve-col h2 {
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+
+    .reserve-col > p {
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 2rem;
+    }
+
+    .reserve-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    .form-group label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      width: 100%;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255,255,255,0.3);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--teal);
+      background: rgba(42,143,163,0.08);
+    }
+
+    .form-group select option { background: var(--navy); }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-submit-btn {
+      background: var(--teal);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.25s;
+      margin-top: 0.5rem;
+    }
+
+    .form-submit-btn:hover { background: var(--teal-dark); }
+
+    /* Hours card */
+    .hours-col .eyebrow {
+      color: var(--teal-light);
+      margin-bottom: 1.25rem;
+    }
+
+    .hours-col h2 {
+      color: var(--white);
+      margin-bottom: 2rem;
+    }
+
+    .hours-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px;
+      padding: 2rem;
+    }
+
+    .hours-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .hours-row:last-child { border-bottom: none; }
+
+    .hours-day {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .hours-time {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--white);
+    }
+
+    .season-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      background: rgba(42,143,163,0.15);
+      border: 1px solid rgba(42,143,163,0.3);
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+    }
+
+    .season-badge span {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+    }
+
+    .season-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal-light);
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Direct contact strip in hours */
+    .contact-links {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: rgba(255,255,255,0.65);
+      font-size: 0.9375rem;
+      transition: color 0.2s;
+      text-decoration: none;
+    }
+
+    .contact-link:hover { color: var(--teal-light); }
+
+    .contact-link svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    /* ================================================
+       CONTACT & MAP
+    ================================================ */
+    .contact-section {
+      background: var(--sand);
+    }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: clamp(3rem, 6vw, 5rem);
+      align-items: start;
+    }
+
+    .contact-info-col .eyebrow { margin-bottom: 1.25rem; }
+    .contact-info-col h2 { color: var(--navy); margin-bottom: 1rem; }
+    .contact-info-col p { margin-bottom: 2rem; }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .contact-detail-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.875rem;
+    }
+
+    .contact-detail-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(42,143,163,0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .contact-detail-icon svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--teal);
+      fill: none;
+    }
+
+    .contact-detail-text strong {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 0.2rem;
+    }
+
+    .contact-detail-text a {
+      color: var(--navy);
+      font-size: 0.9375rem;
+      transition: color 0.2s;
+    }
+
+    .contact-detail-text a:hover { color: var(--teal); }
+
+    .contact-detail-text p {
+      color: var(--text-body);
+      font-size: 0.9375rem;
+      margin-bottom: 0;
+    }
+
+    .map-col {
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .map-col iframe {
+      width: 100%;
+      height: clamp(300px, 40vw, 480px);
+      border: none;
+      display: block;
+      filter: saturate(0.7) contrast(1.05);
+    }
+
+    /* ================================================
+       FOOTER
+    ================================================ */
+    .site-footer {
+      background: var(--navy);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer-top {
+      padding: clamp(3rem, 5vw, 4.5rem) 0 2.5rem;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: clamp(2rem, 4vw, 4rem);
+    }
+
+    .footer-brand .logo-name {
+      font-family: var(--font-display);
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: var(--white);
+      display: block;
+      margin-bottom: 0.375rem;
+    }
+
+    .footer-brand .logo-tagline {
+      font-size: 0.5625rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      display: block;
+      margin-bottom: 1.25rem;
+    }
+
+    .footer-brand p {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.65;
+      max-width: 280px;
+    }
+
+    .footer-nav-col h4 {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 1.25rem;
+    }
+
+    .footer-nav-col ul {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .footer-nav-col a {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+
+    .footer-nav-col a:hover { color: var(--teal-light); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .footer-social a {
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .footer-social a:hover {
+      border-color: var(--teal);
+      background: rgba(42,143,163,0.15);
+    }
+
+    .footer-social svg {
+      width: 13px;
+      height: 13px;
+      stroke: rgba(255,255,255,0.6);
+      fill: none;
+    }
+
+    /* ================================================
+       STICKY MOBILE RESERVE BAR
+    ================================================ */
+    .mobile-reserve-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 800;
+      background: var(--navy);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding: 0.875rem 1.25rem;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .mobile-reserve-bar a {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .mobile-reserve-bar .bar-call {
+      background: rgba(255,255,255,0.07);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .mobile-reserve-bar .bar-reserve {
+      background: var(--teal);
+      color: var(--white);
+    }
+
+    .mobile-reserve-bar svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    /* ================================================
+       ANIMATION BASE STATES
+    ================================================ */
+    [data-fade-up] {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+
+    [data-slide-left] {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+
+    [data-slide-right] {
+      opacity: 0;
+      transform: translateX(40px);
+    }
+
+    [data-fade-in] {
+      opacity: 0;
+    }
+
+    .divider-line {
+      transform-origin: left;
+      transform: scaleX(0);
+    }
+
+    /* ================================================
+       RESPONSIVE
+    ================================================ */
+
+    @media (max-width: 1024px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .about-image-col { order: -1; }
+      .about-image-col::before,
+      .about-image-col::after { display: none; }
+      .reserve-grid { grid-template-columns: 1fr; }
+      .contact-layout { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .main-nav { display: none; }
+      .hamburger { display: flex; }
+      .mobile-reserve-bar { display: flex; }
+
+      body { padding-bottom: 72px; }
+
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: 100svh;
+      }
+
+      .hero-photo-panel {
+        height: 45svh;
+        order: -1;
+      }
+
+      .hero-text-panel {
+        padding: 2.5rem 1.5rem 2rem;
+        justify-content: center;
+      }
+
+      .hero-text-panel::before { display: none; }
+      .hero-scroll-indicator { display: none; }
+
+      .menu-layout { grid-template-columns: 1fr; }
+
+      .gallery-masonry { columns: 2; }
+
+      .footer-top { grid-template-columns: 1fr; }
+
+      .stats-row { flex-wrap: wrap; gap: 1.5rem; }
+
+      .form-row { grid-template-columns: 1fr; }
+
+      .marina-content { margin-left: 0; padding: 3rem 1.25rem; }
+
+      .gallery-header { flex-direction: column; align-items: flex-start; }
+
+      .footer-bottom { justify-content: center; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .gallery-masonry { columns: 1; }
+      .hero-cta-group { flex-direction: column; }
+      .hero-cta-group a { width: 100%; text-align: center; justify-content: center; }
+      .marina-detail-strip { flex-direction: column; gap: 1rem; }
+    }
+
+    /* prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      [data-fade-up], [data-slide-left], [data-slide-right], [data-fade-in] {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .hero-photo-panel img { transform: none !important; }
+      .divider-line { transform: scaleX(1) !important; }
+      .scroll-line { animation: none; }
+      .about-image-wrap img { clip-path: none !important; }
+      .menu-accent-image img { clip-path: none !important; }
+      .gallery-item img { clip-path: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================
+       HEADER
+  ==================================================== -->
+  <header class="site-header" id="site-header">
+    <div class="header-inner">
+      <a href="#" class="site-logo">
+        <span class="logo-name">Bistro Europa</span>
+        <span class="logo-tagline">Biograd na Moru &bull; Od mora</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Glavna navigacija">
+        <a href="#o-nama">O nama</a>
+        <a href="#meni">Meni</a>
+        <a href="#marina">Marina</a>
+        <a href="#galerija">Galerija</a>
+        <a href="#kontakt">Kontakt</a>
+        <a href="#rezervacije" class="nav-reserve-btn">Rezervacija</a>
+      </nav>
+
+      <button class="hamburger" id="hamburger" aria-label="Otvori izbornik" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile nav -->
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobilna navigacija">
+    <a href="#o-nama"    class="mobile-nav-link">O nama</a>
+    <a href="#meni"      class="mobile-nav-link">Meni</a>
+    <a href="#marina"    class="mobile-nav-link">Marina</a>
+    <a href="#galerija"  class="mobile-nav-link">Galerija</a>
+    <a href="#kontakt"   class="mobile-nav-link">Kontakt</a>
+    <a href="#rezervacije" class="mobile-nav-link mobile-nav-reserve">Rezervacija</a>
+  </nav>
+
+
+  <!-- ===================================================
+       HERO — EDITORIAL SPLIT
+  ==================================================== -->
+  <section class="hero" id="hero" aria-label="Hero sekcija">
+
+    <!-- LEFT: Navy text block -->
+    <div class="hero-text-panel">
+      <p class="eyebrow hero-eyebrow" data-fade-up>Biograd na Moru &mdash; Dalmacija</p>
+
+      <h1 class="display-xl hero-title" data-fade-up>
+        Bistro<br />
+        <em>Europa</em><br />
+        uz more.
+      </h1>
+
+      <p class="hero-subtitle" data-fade-up>
+        Svježa riba, domaće tjestenine i dalmatinska kuhinja — tik uz marinu, između brodova i mirisa mora.
+      </p>
+
+      <div class="hero-cta-group" data-fade-up>
+        <a href="#rezervacije" class="btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Rezervirajte stol
+        </a>
+        <a href="#meni" class="btn-outline">Pogledajte meni</a>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="hero-scroll-indicator" aria-hidden="true">
+        <div class="scroll-line"></div>
+        <span>Skrolaj</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: Photo panel -->
+    <div class="hero-photo-panel" id="hero-photo">
+      <img
+        src="https://loremflickr.com/900/1000/biograd,marina?lock=2001"
+        alt="Marina u Biogradu na Moru"
+        loading="eager"
+        width="900"
+        height="1000"
+      />
+      <div class="hero-location-badge">
+        <p>
+          <span>Bistro Europa</span><br />
+          Obala Kralja Tomislava<br />
+          23210 Biograd na Moru
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       MARQUEE STRIP
+  ==================================================== -->
+  <div class="marquee-section" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="marquee-item">Svježa riba</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Dalmatinska kuhinja</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Uz marinu</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Kornati & Pašman</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Obiteljski bistro</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Od travnja do listopada</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Bistro Europa</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Biograd na Moru</span><span class="marquee-dot">&bull;</span>
+      <!-- Duplicate for seamless loop -->
+      <span class="marquee-item">Svježa riba</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Dalmatinska kuhinja</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Uz marinu</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Kornati & Pašman</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Obiteljski bistro</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Od travnja do listopada</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Bistro Europa</span><span class="marquee-dot">&bull;</span>
+      <span class="marquee-item">Biograd na Moru</span><span class="marquee-dot">&bull;</span>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       ABOUT — stat-driven
+  ==================================================== -->
+  <section class="about-section section-pad" id="o-nama" aria-labelledby="about-heading">
+    <div class="container">
+
+      <div class="divider-line" aria-hidden="true" style="margin-bottom: clamp(2.5rem,5vw,4rem);"></div>
+
+      <div class="about-grid">
+
+        <!-- Text col: slides from left -->
+        <div class="about-text-col" data-slide-left>
+          <p class="eyebrow">O nama</p>
+          <h2 class="display-md" id="about-heading">Na rivi, između brodova i mora.</h2>
+          <p class="body-lg">
+            Na rivi Biograda na Moru, između brodova koji kreću prema Kornatima i obitelji koje se vraćaju s plaže, Bistro Europa nudi ono što Dalmacija zna najbolje — svježu ribu, domaće tjestenine i mediteransku kuhinju bez kompromisa. Jednostavno, iskreno i uz more.
+          </p>
+          <a href="tel:+38523383931" class="btn-primary" style="width: fit-content;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            +385 23 383 931
+          </a>
+
+          <!-- Stats -->
+          <div class="stats-row">
+            <div class="stat-item">
+              <span class="stat-number" data-count="20"><span class="count-val">0</span><sup>+</sup></span>
+              <span class="stat-label">Godina tradicije</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" data-count="15"><span class="count-val">0</span><sup>+</sup></span>
+              <span class="stat-label">Jela na meniju</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" data-count="250"><span class="count-val">0</span><sup>+</sup></span>
+              <span class="stat-label">Metara od mora</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image col: slides from right -->
+        <div class="about-image-col" data-slide-right>
+          <div class="about-image-wrap">
+            <img
+              src="https://loremflickr.com/800/500/adriatic,harbor?lock=2002"
+              alt="Jadranska obala, luka Biograd"
+              loading="lazy"
+              width="800"
+              height="500"
+            />
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       MENU — Full-width editorial single-column
+  ==================================================== -->
+  <section class="menu-section section-pad" id="meni" aria-labelledby="menu-heading">
+    <div class="container">
+
+      <div class="divider-line" aria-hidden="true" style="margin-bottom: clamp(2.5rem,5vw,4rem);"></div>
+
+      <div class="menu-header" data-slide-left>
+        <p class="eyebrow">Naš meni</p>
+        <h2 class="display-md" id="menu-heading">Dalmatinska kuhinja, mediteranski duh.</h2>
+        <p class="body-lg" style="margin-top: 0.75rem;">Svaki dan biramo najsvježije — riba s gradela, domaće paste, sezonski okusi.</p>
+      </div>
+
+      <!-- Accent image (curtain reveal) -->
+      <div class="menu-accent-image" data-fade-in>
+        <img
+          src="https://loremflickr.com/600/400/pasta?lock=2004"
+          alt="Domaća pasta u Bistru Europa"
+          loading="lazy"
+          width="600"
+          height="400"
+        />
+      </div>
+
+      <!-- Menu categories -->
+      <div class="menu-layout" style="margin-top: clamp(2.5rem,5vw,4rem);">
+
+        <!-- LEFT COLUMN -->
+        <div class="menu-col">
+
+          <!-- Za početak -->
+          <div class="menu-category" data-fade-up>
+            <h3 class="menu-category-name">Za početak</h3>
+            <div class="menu-items">
+              <div class="menu-item">
+                <p class="menu-item-name">Bruschetta s mediteranskim namazom</p>
+                <p class="menu-item-desc">Pečeni kruh s domaćim namazom od suhih rajčica i maslinovog ulja</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Salata od hobotnice</p>
+                <p class="menu-item-desc">Svježa hobotnica, kapari, maslinovo ulje, peršin</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Caprese od domaćeg sira</p>
+                <p class="menu-item-desc">Domaći sir, rajčice iz vrta, bosiljak, extradevičansko ulje</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Dagnje na buzaru</p>
+                <p class="menu-item-desc">Svježe dagnje, bijelo vino, češnjak, vezičica peršina</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- S gradela / Iz mora -->
+          <div class="menu-category" data-fade-up>
+            <h3 class="menu-category-name">S gradela &mdash; Iz mora</h3>
+            <div class="menu-items">
+              <div class="menu-item">
+                <p class="menu-item-name">Riba s gradela (sezonska)</p>
+                <p class="menu-item-desc">Svježa riba dana s gradelom, maslinovim uljem i limunom</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Lignje s gradela</p>
+                <p class="menu-item-desc">Svježe lignje, blitva s krumpirom, kapari</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Škampi na buzaru</p>
+                <p class="menu-item-desc">Škampi u umaku od bijelog vina, rajčice i češnjaka</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Brancin s limunom i kaparima</p>
+                <p class="menu-item-desc">Cijeli brancin pečen na gradelu, prilog po izboru</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deserti -->
+          <div class="menu-category" data-fade-up>
+            <h3 class="menu-category-name">Deserti</h3>
+            <div class="menu-items">
+              <div class="menu-item">
+                <p class="menu-item-name">Panna cotta s umakom od šumskog voća</p>
+                <p class="menu-item-desc">Klasični talijanski desert s domaćim šumskim voćem</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Čokoladni fondant</p>
+                <p class="menu-item-desc">Topli čokoladni kolač s tekućim srcem, sladoled od vanilije</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Domaći kolači dana</p>
+                <p class="menu-item-desc">Pitajte konobara o današnjim domaćim slasticama</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Sladoled od smokve</p>
+                <p class="menu-item-desc">Ručno rađeni sladoled od dalmatinske smokve</p>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /menu-col -->
+
+        <!-- RIGHT COLUMN -->
+        <div class="menu-col">
+
+          <!-- Glavna jela / Meso -->
+          <div class="menu-category" data-fade-up>
+            <h3 class="menu-category-name">Glavna jela &mdash; Meso</h3>
+            <div class="menu-items">
+              <div class="menu-item">
+                <p class="menu-item-name">Biftek s pečenim povrćem</p>
+                <p class="menu-item-desc">Odabrani goveđi biftek s mediteranskim povrćem</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Dalmatinska pašticada</p>
+                <p class="menu-item-desc">Tradicionalna dalmatinska pašticada s njokima, po receptu bake</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Janjetina ispod peke</p>
+                <p class="menu-item-desc">Janjetina pečena ispod peke s krumpirom i povrćem</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Miješano meso s gradela</p>
+                <p class="menu-item-desc">Izbor mesa s gradela, prilog i sezonska salata</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tjestenine -->
+          <div class="menu-category" data-fade-up>
+            <h3 class="menu-category-name">Tjestenine</h3>
+            <div class="menu-items">
+              <div class="menu-item">
+                <p class="menu-item-name">Pljukanci s tartufi</p>
+                <p class="menu-item-desc">Domaći pljukanci s istarskim tartufima i maslacem</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Crni rižoto</p>
+                <p class="menu-item-desc">Rižoto s tintom od sipe, svježi plodovi mora</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Spaghetti frutti di mare</p>
+                <p class="menu-item-desc">Špageti s plodovima mora u rajčičnom umaku</p>
+              </div>
+              <div class="menu-item">
+                <p class="menu-item-name">Penne all'arrabbiata</p>
+                <p class="menu-item-desc">Penne u ljutom umaku od rajčice s češnjakom i peperoncinoima</p>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /menu-col -->
+
+      </div><!-- /menu-layout -->
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       MARINA SECTION — Wide parallax band (VISUAL CENTERPIECE)
+  ==================================================== -->
+  <section class="marina-section" id="marina" aria-labelledby="marina-heading">
+
+    <div class="marina-bg" id="marina-bg">
+      <img
+        src="https://loremflickr.com/1600/600/mediterranean,sea?lock=2003"
+        alt="Mediteransko more, marina Biograd"
+        loading="lazy"
+        width="1600"
+        height="600"
+      />
+    </div>
+
+    <div class="marina-overlay" aria-hidden="true"></div>
+
+    <div class="marina-content" data-slide-left>
+      <p class="eyebrow">Biograd &amp; Marina</p>
+      <h2 class="display-md" id="marina-heading" style="color: var(--white);">Nekadašnji grad hrvatskih kraljeva.</h2>
+      <p>
+        Biograd na Moru, nekadašnji grad hrvatskih kraljeva, danas je živahna polazišna točka za jedriličare i putnike prema Kornatima i Pašmanu. Marina prima brodove iz cijelog Mediterana, a mi smo tu — tik uz obalu, za svaki stol koji gleda prema moru.
+      </p>
+
+      <div class="marina-detail-strip">
+        <div class="marina-detail">
+          <div class="marina-detail-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <span class="marina-detail-text">250+ m od mora</span>
+        </div>
+        <div class="marina-detail">
+          <div class="marina-detail-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path d="M3 18h18M3 6h18M7 12h10"/></svg>
+          </div>
+          <span class="marina-detail-text">Kornati gateway</span>
+        </div>
+        <div class="marina-detail">
+          <div class="marina-detail-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <span class="marina-detail-text">Pašman &amp; Kornati</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ===================================================
+       GALLERY — 3-column masonry
+  ==================================================== -->
+  <section class="gallery-section section-pad" id="galerija" aria-labelledby="gallery-heading">
+    <div class="container">
+
+      <div class="divider-line" aria-hidden="true" style="margin-bottom: clamp(2.5rem,5vw,4rem);"></div>
+
+      <div class="gallery-header">
+        <div data-slide-left>
+          <p class="eyebrow">Galerija</p>
+          <h2 class="display-md" id="gallery-heading" style="color: var(--navy);">Okusi i atmosfera.</h2>
+        </div>
+        <p class="body-lg" style="max-width: 320px; text-align: right;" data-slide-right>
+          Svaka slika — miris mora, okus Dalmacije.
+        </p>
+      </div>
+
+      <div class="gallery-masonry" role="list">
+
+        <div class="gallery-item" role="listitem">
+          <img
+            src="https://loremflickr.com/600/400/grilled,fish?lock=2005"
+            alt="Riba s gradela"
+            loading="lazy"
+            width="600"
+            height="400"
+          />
+        </div>
+
+        <div class="gallery-item" role="listitem">
+          <img
+            src="https://loremflickr.com/600/700/bistro,food?lock=2006"
+            alt="Bistro atmosfera"
+            loading="lazy"
+            width="600"
+            height="700"
+          />
+        </div>
+
+        <div class="gallery-item" role="listitem">
+          <img
+            src="https://loremflickr.com/600/450/adriatic,harbor?lock=2007"
+            alt="Jadranska luka Biograd"
+            loading="lazy"
+            width="600"
+            height="450"
+          />
+        </div>
+
+        <div class="gallery-item" role="listitem">
+          <img
+            src="https://loremflickr.com/600/500/pasta?lock=2008"
+            alt="Domaća pasta"
+            loading="lazy"
+            width="600"
+            height="500"
+          />
+        </div>
+
+        <div class="gallery-item" role="listitem">
+          <img
+            src="https://loremflickr.com/600/420/mediterranean,food?lock=2009"
+            alt="Mediteranska hrana"
+            loading="lazy"
+            width="600"
+            height="420"
+          />
+        </div>
+
+        <div class="gallery-item" role="listitem">
+          <img
+            src="https://loremflickr.com/600/380/biograd,marina?lock=2010"
+            alt="Marina Biograd na Moru"
+            loading="lazy"
+            width="600"
+            height="380"
+          />
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       RESERVATIONS + HOURS
+  ==================================================== -->
+  <section class="reserve-section section-pad" id="rezervacije" aria-labelledby="reserve-heading">
+    <div class="container">
+
+      <div class="reserve-grid">
+
+        <!-- Form col -->
+        <div class="reserve-col" data-slide-left>
+          <p class="eyebrow">Rezervacija stola</p>
+          <h2 class="display-md" id="reserve-heading">Rezervirajte vaš stol.</h2>
+          <p>Javite nam se — rezerviramo po dolasku ili unaprijed. Svaki stol gleda prema moru.</p>
+
+          <form class="reserve-form" action="mailto:europa.biograd@gmail.com" method="GET" novalidate>
+            <div class="form-group">
+              <label for="r-name">Ime i prezime</label>
+              <input type="text" id="r-name" name="name" placeholder="Vaše ime" required autocomplete="name" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="r-date">Datum</label>
+                <input type="date" id="r-date" name="date" required />
+              </div>
+              <div class="form-group">
+                <label for="r-time">Sat</label>
+                <input type="time" id="r-time" name="time" placeholder="19:00" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="r-guests">Broj gostiju</label>
+              <select id="r-guests" name="guests">
+                <option value="1">1 osoba</option>
+                <option value="2" selected>2 osobe</option>
+                <option value="3">3 osobe</option>
+                <option value="4">4 osobe</option>
+                <option value="5">5 osoba</option>
+                <option value="6">6 osoba</option>
+                <option value="7+">7+ osoba (poseban zahtjev)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="r-phone">Telefon</label>
+              <input type="tel" id="r-phone" name="phone" placeholder="+385 xx xxx xxxx" autocomplete="tel" />
+            </div>
+            <div class="form-group">
+              <label for="r-note">Napomena (opcijono)</label>
+              <textarea id="r-note" name="note" rows="3" placeholder="Alergije, posebni zahtjevi..."></textarea>
+            </div>
+            <button type="submit" class="form-submit-btn">Pošalji rezervaciju</button>
+          </form>
+        </div>
+
+        <!-- Hours col -->
+        <div class="hours-col" data-slide-right>
+          <p class="eyebrow">Radno vrijeme</p>
+          <h2 class="display-md" style="color: var(--white);">Otvoreni za vas.</h2>
+
+          <div class="hours-card">
+            <div class="hours-row">
+              <span class="hours-day">Ponedjeljak &ndash; Petak</span>
+              <span class="hours-time">11:00 &ndash; 23:00</span>
+            </div>
+            <div class="hours-row">
+              <span class="hours-day">Subota &ndash; Nedjelja</span>
+              <span class="hours-time">11:00 &ndash; 24:00</span>
+            </div>
+            <div class="hours-row">
+              <span class="hours-day">Sezona</span>
+              <span class="hours-time" style="font-style: italic; font-size: 0.9rem;">Travanj &ndash; Listopad</span>
+            </div>
+          </div>
+
+          <div class="season-badge">
+            <div class="season-dot"></div>
+            <span>Trenutno otvoreno &mdash; Sezona 2026</span>
+          </div>
+
+          <div class="contact-links">
+            <a href="tel:+38523383931" class="contact-link">
+              <svg viewBox="0 0 24 24" stroke-width="1.5" aria-label="Telefon"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              +385 23 383 931
+            </a>
+            <a href="mailto:europa.biograd@gmail.com" class="contact-link">
+              <svg viewBox="0 0 24 24" stroke-width="1.5" aria-label="Email"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              europa.biograd@gmail.com
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       CONTACT & MAP
+  ==================================================== -->
+  <section class="contact-section section-pad" id="kontakt" aria-labelledby="contact-heading">
+    <div class="container">
+
+      <div class="divider-line" aria-hidden="true" style="margin-bottom: clamp(2.5rem,5vw,4rem);"></div>
+
+      <div class="contact-layout">
+
+        <div class="contact-info-col" data-slide-left>
+          <p class="eyebrow">Kontakt &amp; Lokacija</p>
+          <h2 class="display-md" id="contact-heading" style="color: var(--navy);">Pronađite nas uz marinu.</h2>
+          <p class="body-lg">Nalazimo se na samoj rivi, korak od marine i trajektnog pristaništa za Tkon i Kornate.</p>
+
+          <div class="contact-details">
+
+            <div class="contact-detail-item">
+              <div class="contact-detail-icon">
+                <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div class="contact-detail-text">
+                <strong>Adresa</strong>
+                <p>Obala Kralja Tomislava<br />23210 Biograd na Moru, Hrvatska</p>
+              </div>
+            </div>
+
+            <div class="contact-detail-item">
+              <div class="contact-detail-icon">
+                <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              </div>
+              <div class="contact-detail-text">
+                <strong>Telefon</strong>
+                <a href="tel:+38523383931">+385 23 383 931</a>
+              </div>
+            </div>
+
+            <div class="contact-detail-item">
+              <div class="contact-detail-icon">
+                <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div class="contact-detail-text">
+                <strong>Email</strong>
+                <a href="mailto:europa.biograd@gmail.com">europa.biograd@gmail.com</a>
+              </div>
+            </div>
+
+          </div>
+
+          <a href="#rezervacije" class="btn-primary" style="width: fit-content; background: var(--navy); border-color: var(--teal); color: var(--white);">
+            Rezervirajte stol
+          </a>
+        </div>
+
+        <!-- Map -->
+        <div class="map-col" data-slide-right>
+          <iframe
+            src="https://maps.google.com/maps?q=Bistro+Europa+Biograd+na+Moru&output=embed"
+            title="Lokacija Bistro Europa na karti"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================================================
+       FOOTER
+  ==================================================== -->
+  <footer class="site-footer" aria-label="Podnožje stranice">
+    <div class="container">
+      <div class="footer-top">
+
+        <div class="footer-brand">
+          <span class="logo-name">Bistro Europa</span>
+          <span class="logo-tagline">Biograd na Moru &bull; Od mora, za vas</span>
+          <p>
+            Dalmatinska kuhinja i mediteranski duh tik uz marinu. Svježa riba, domaće tjestenine, obiteljska tradicija.
+          </p>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4>Navigacija</h4>
+          <ul>
+            <li><a href="#o-nama">O nama</a></li>
+            <li><a href="#meni">Meni</a></li>
+            <li><a href="#marina">Marina</a></li>
+            <li><a href="#galerija">Galerija</a></li>
+            <li><a href="#rezervacije">Rezervacija</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4>Kontakt</h4>
+          <ul>
+            <li><a href="tel:+38523383931">+385 23 383 931</a></li>
+            <li><a href="mailto:europa.biograd@gmail.com">europa.biograd@gmail.com</a></li>
+            <li style="color: rgba(255,255,255,0.4); font-size: 0.875rem; pointer-events: none;">Obala Kralja Tomislava</li>
+            <li style="color: rgba(255,255,255,0.4); font-size: 0.875rem; pointer-events: none;">23210 Biograd na Moru</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2026 Bistro Europa, Biograd na Moru. Sva prava pridržana.</p>
+        <div class="footer-social" aria-label="Društvene mreže">
+          <a href="#" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" aria-label="TripAdvisor">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ===================================================
+       STICKY MOBILE RESERVE BAR
+  ==================================================== -->
+  <div class="mobile-reserve-bar" role="complementary" aria-label="Brzi kontakt">
+    <a href="tel:+38523383931" class="bar-call">
+      <svg viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      Pozovi
+    </a>
+    <a href="#rezervacije" class="bar-reserve">
+      <svg viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Rezerviraj
+    </a>
+  </div>
+
+
+  <!-- ===================================================
+       JAVASCRIPT — Lenis + GSAP + all animations
+  ==================================================== -->
+  <script>
+  (function () {
+    'use strict';
+
+    // ── prefers-reduced-motion guard ──────────────────────
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ── LENIS smooth scroll ────────────────────────────────
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      smoothWheel: true,
+      touchMultiplier: 1.6,
+    });
+
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
+    lenis.on('scroll', ScrollTrigger.update);
+
+    // ── Smooth anchor scroll ──────────────────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (!target) return;
+        e.preventDefault();
+        lenis.scrollTo(target, { offset: -72, duration: 1.4 });
+        // Close mobile nav if open
+        closeMobileNav();
+      });
+    });
+
+    // ── Header scroll effect ──────────────────────────────
+    const header = document.getElementById('site-header');
+    ScrollTrigger.create({
+      start: 'top -80',
+      onUpdate: (self) => {
+        if (self.progress > 0) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      }
+    });
+
+    // ── Hamburger / Mobile nav ────────────────────────────
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobile-nav');
+    let navOpen = false;
+
+    function openMobileNav() {
+      navOpen = true;
+      hamburger.classList.add('open');
+      hamburger.setAttribute('aria-expanded', 'true');
+      mobileNav.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileNav() {
+      navOpen = false;
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      mobileNav.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    hamburger.addEventListener('click', () => {
+      navOpen ? closeMobileNav() : openMobileNav();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navOpen) closeMobileNav();
+    });
+
+    // ── ANIMATIONS (skip if reduced motion) ──────────────
+    if (!reducedMotion) {
+
+      // 1. Hero animations ─────────────────────────────────
+      const heroTL = gsap.timeline({ delay: 0.2 });
+
+      // Hero image clip-path reveal
+      heroTL.fromTo('#hero-photo img',
+        { clipPath: 'inset(100% 0 0 0)', scale: 1.08 },
+        { clipPath: 'inset(0% 0 0 0)', scale: 1, duration: 1.4, ease: 'power3.inOut' }
+      );
+
+      // Hero text elements fade up (staggered)
+      heroTL.from('.hero-text-panel [data-fade-up]', {
+        opacity: 0,
+        y: 30,
+        duration: 0.85,
+        stagger: 0.15,
+        ease: 'power3.out',
+      }, '-=0.8');
+
+      // Hero scroll indicator fade
+      heroTL.from('.hero-scroll-indicator', {
+        opacity: 0,
+        y: 10,
+        duration: 0.6,
+        ease: 'power2.out',
+      }, '-=0.3');
+
+      // 2. Scroll fade-up elements ──────────────────────────
+      gsap.utils.toArray('[data-fade-up]').forEach(el => {
+        // Skip hero panel (already animated above)
+        if (el.closest('.hero-text-panel')) return;
+
+        gsap.from(el, {
+          opacity: 0,
+          y: 28,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none none',
+          }
+        });
+      });
+
+      // 3. Slide from LEFT ─────────────────────────────────
+      gsap.utils.toArray('[data-slide-left]').forEach(el => {
+        gsap.from(el, {
+          opacity: 0,
+          x: -45,
+          duration: 1.0,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 82%',
+            toggleActions: 'play none none none',
+          }
+        });
+      });
+
+      // 4. Slide from RIGHT ────────────────────────────────
+      gsap.utils.toArray('[data-slide-right]').forEach(el => {
+        gsap.from(el, {
+          opacity: 0,
+          x: 45,
+          duration: 1.0,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 82%',
+            toggleActions: 'play none none none',
+          }
+        });
+      });
+
+      // 5. Fade-in ─────────────────────────────────────────
+      gsap.utils.toArray('[data-fade-in]').forEach(el => {
+        gsap.from(el, {
+          opacity: 0,
+          duration: 0.9,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none none',
+          }
+        });
+      });
+
+      // 6. Divider lines draw in ───────────────────────────
+      gsap.utils.toArray('.divider-line').forEach(line => {
+        gsap.to(line, {
+          scaleX: 1,
+          opacity: 0.6,
+          duration: 1.2,
+          ease: 'power3.inOut',
+          scrollTrigger: {
+            trigger: line,
+            start: 'top 90%',
+            toggleActions: 'play none none none',
+          }
+        });
+      });
+
+      // 7. Clip-path CURTAIN REVEAL — about image ──────────
+      const aboutImg = document.querySelector('.about-image-wrap img');
+      if (aboutImg) {
+        gsap.to(aboutImg, {
+          clipPath: 'inset(0% 0 0 0)',
+          duration: 1.3,
+          ease: 'power3.inOut',
+          scrollTrigger: {
+            trigger: aboutImg,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
+          }
+        });
+      }
+
+      // 8. Clip-path CURTAIN REVEAL — menu accent image ────
+      const menuAccentImg = document.querySelector('.menu-accent-image img');
+      if (menuAccentImg) {
+        gsap.to(menuAccentImg, {
+          clipPath: 'inset(0 0% 0 0)',
+          duration: 1.4,
+          ease: 'power3.inOut',
+          scrollTrigger: {
+            trigger: menuAccentImg,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
+          }
+        });
+      }
+
+      // 9. Gallery items — stagger curtain reveal ──────────
+      gsap.utils.toArray('.gallery-item img').forEach((img, i) => {
+        gsap.to(img, {
+          clipPath: 'inset(0% 0 0 0)',
+          duration: 1.1,
+          ease: 'power3.inOut',
+          scrollTrigger: {
+            trigger: img,
+            start: 'top 88%',
+            toggleActions: 'play none none none',
+          },
+          delay: (i % 3) * 0.1,
+        });
+      });
+
+      // 10. Marina parallax ────────────────────────────────
+      const marinaBg = document.getElementById('marina-bg');
+      if (marinaBg) {
+        gsap.to(marinaBg, {
+          yPercent: 18,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.marina-section',
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.2,
+          }
+        });
+      }
+
+      // 11. Hero photo subtle parallax (on scroll) ─────────
+      gsap.to('#hero-photo img', {
+        yPercent: 12,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1,
+        }
+      });
+
+      // 12. COUNT-UP numbers ───────────────────────────────
+      function countUp(el) {
+        const target = parseInt(el.getAttribute('data-count'), 10);
+        const valEl   = el.querySelector('.count-val');
+        if (!valEl) return;
+
+        const obj = { val: 0 };
+        gsap.to(obj, {
+          val: target,
+          duration: 2.0,
+          ease: 'power2.out',
+          snap: { val: 1 },
+          onUpdate: () => { valEl.textContent = Math.round(obj.val); },
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none none',
+            once: true,
+          }
+        });
+      }
+
+      document.querySelectorAll('[data-count]').forEach(countUp);
+
+      // 13. Section menu categories stagger ────────────────
+      gsap.utils.toArray('.menu-category').forEach((cat, i) => {
+        gsap.from(cat, {
+          opacity: 0,
+          y: 24,
+          duration: 0.75,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: cat,
+            start: 'top 88%',
+            toggleActions: 'play none none none',
+          },
+          delay: (i % 3) * 0.08,
+        });
+      });
+
+    } // end !reducedMotion
+
+    // ── Accessibility: respect tab focus for mobile nav ──
+    mobileNav.querySelectorAll('a').forEach(a => {
+      a.setAttribute('tabindex', '-1');
+    });
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileNav.classList.contains('open');
+      mobileNav.querySelectorAll('a').forEach(a => {
+        a.setAttribute('tabindex', isOpen ? '0' : '-1');
+      });
+    });
+
+  })();
+  </script>
+
+</body>
+</html>
